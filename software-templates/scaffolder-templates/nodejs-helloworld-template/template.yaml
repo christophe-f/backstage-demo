@@ -60,8 +60,8 @@ spec:
         values:
           component_id: ${{ parameters.component_id }}
           description: ${{ parameters.description }}
+          destination: ${{ parameters.repoUrl | parseRepoUrl }}
           owner: ${{ parameters.owner }}
-          organization: ${{ parameters.organization }}
 
     - id: publish
       name: Publishing to Source Code Repository

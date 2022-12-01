@@ -9,6 +9,12 @@ catalog:
       rules:
         - allow: [Template]
 
+integrations:
+  github:
+    - host: github.com
+      apps:
+        - $include: github-app-redhat-backstage-demo-credentials.yaml
+
 scaffolder:
   defaultAuthor:
     name: Janus Scaffolder
