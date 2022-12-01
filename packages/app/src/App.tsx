@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate, Route } from 'react-router';
+import { Route } from 'react-router';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import {
   CatalogEntityPage,
@@ -33,6 +33,10 @@ import { FlatRoutes } from '@backstage/core-app-api';
 import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
+import {CssBaseline, ThemeProvider} from "@material-ui/core";
+import { redHatTheme } from './themes/redhat';
+import {HomepageCompositionRoot} from "@backstage/plugin-home";
+import {HomePage} from "./components/home/HomePage";
 
 const app = createApp({
   apis,
@@ -51,6 +55,16 @@ const app = createApp({
       catalogIndex: catalogPlugin.routes.catalogIndex,
     });
   },
+    themes: [{
+        id: 'redhat',
+        title: 'Red Hat Theme',
+        variant: 'light',
+        Provider: ({ children }) => (
+            <ThemeProvider theme={redHatTheme}>
+                <CssBaseline>{children}</CssBaseline>
+            </ThemeProvider>
+        ),
+    }],
 });
 
 const AppProvider = app.getProvider();
@@ -58,7 +72,9 @@ const AppRouter = app.getRouter();
 
 const routes = (
   <FlatRoutes>
-    <Route path="/" element={<Navigate to="catalog" />} />
+      <Route path="/" element={<HomepageCompositionRoot />}>
+          <HomePage />
+      </Route>;
     <Route path="/catalog" element={<CatalogIndexPage />} />
     <Route
       path="/catalog/:namespace/:kind/:name"
