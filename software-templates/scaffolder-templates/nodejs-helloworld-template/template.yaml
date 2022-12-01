@@ -68,7 +68,7 @@ spec:
       action: publish:github
       input:
         allowedHosts: ["github.com"]
-        description: This is ${{ parameters.component_id }}
+        description: ${{ parameters.description }}
         repoUrl: ${{ parameters.repoUrl }}
         defaultBranch: main
 
@@ -86,3 +86,6 @@ spec:
       - title: Open Component in catalog
         icon: catalog
         entityRef: ${{ steps.register.output.entityRef }}
+      - title: View TechDocs
+        icon: techdocs
+        entityRef: ${{ steps.register.output.entityRef }}/docs
