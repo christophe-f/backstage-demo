@@ -1,0 +1,19 @@
+# Backstage override configuration for your local development environment
+organization:
+  name: Red Hat demo
+
+catalog:
+  locations:
+    - type: file
+      target: ../../software-templates/scaffolder-templates/nodejs-helloworld-template/template.yaml
+      rules:
+        - allow: [Template]
+
+    ## Uncomment these lines to add more example data
+    - type: url
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all.yaml
+
+scaffolder:
+  defaultAuthor:
+    name: Janus Scaffolder
+    email: janus@redhat.com
