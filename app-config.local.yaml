@@ -2,6 +2,14 @@
 organization:
   name: Red Hat demo
 
+auth:
+  environment: development
+  providers:
+    github:
+      development:
+        clientId: ${AUTH_GITHUB_CLIENT_ID}
+        clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
+
 catalog:
   locations:
     - type: file
@@ -15,7 +23,36 @@ integrations:
       apps:
         - $include: github-app-redhat-backstage-demo-credentials.yaml
 
+proxy:
+  '/argocd/api':
+    target: ${ARGOCD_URL}
+    changeOrigin: true
+    # only if your argocd api has self-signed cert
+    secure: false
+    headers:
+      Cookie: ${ARGOCD_AUTH_TOKEN}
+
 scaffolder:
   defaultAuthor:
     name: Janus Scaffolder
     email: janus@redhat.com
+
+kubernetes:
+  serviceLocatorMethod:
+    type: 'multiTenant'
+  clusterLocatorMethods:
+    - type: 'config'
+      clusters:
+        - url: ${K8S_URL}
+          name: minikube
+          authProvider: 'serviceAccount'
+          skipTLSVerify: true
+          skipMetricsLookup: true
+          serviceAccountToken: ${K8S_TOKEN}
+          dashboardUrl: ${K8S_DASHBOARD_URL}
+          dashboardApp: standard
+          caData: ${K8S_CONFIG_CA_DATA}
+          customResources:
+            - group: 'argoproj.io'
+              apiVersion: 'v1alpha1'
+              plural: 'rollouts'

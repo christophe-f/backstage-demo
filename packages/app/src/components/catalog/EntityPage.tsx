@@ -52,6 +52,20 @@ import {
   RELATION_PART_OF,
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
+import {
+  EntityArgoCDOverviewCard,
+  isArgocdAvailable
+} from '@roadiehq/backstage-plugin-argo-cd';
+import {
+  EntityGithubPullRequestsContent,
+  EntityGithubPullRequestsOverviewCard
+} from '@roadiehq/backstage-plugin-github-pull-requests';
+import {
+  EntityGithubInsightsLanguagesCard,
+  isGithubInsightsAvailable,
+  EntityGithubInsightsComplianceCard
+} from '@roadiehq/backstage-plugin-github-insights';
+import { EntityKubernetesContent } from '@backstage/plugin-kubernetes';
 
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
@@ -71,6 +85,11 @@ const cicdContent = (
     <EntitySwitch.Case if={isGithubActionsAvailable}>
       <EntityGithubActionsContent />
     </EntitySwitch.Case>
+    <EntitySwitch.Case if={e => Boolean(isArgocdAvailable(e))}>
+      <Grid item sm={4}>
+        <EntityArgoCDOverviewCard />
+      </Grid>
+    </EntitySwitch.Case>
 
     <EntitySwitch.Case>
       <EmptyState
@@ -89,6 +108,24 @@ const cicdContent = (
       />
     </EntitySwitch.Case>
   </EntitySwitch>
+);
+
+const githubInsightsContent = (
+  <Grid container spacing={3} alignItems="stretch">
+      <EntitySwitch>
+          <EntitySwitch.Case if={e => Boolean(isGithubInsightsAvailable(e))}>
+              <Grid item md={4} xs={12}>
+                  <EntityGithubPullRequestsOverviewCard />
+                  <EntityGithubInsightsLanguagesCard />
+                  <EntityGithubInsightsComplianceCard />
+              </Grid>
+
+              <Grid item md={8} xs={12}>
+                  <EntityGithubPullRequestsContent />
+              </Grid>
+          </EntitySwitch.Case>
+      </EntitySwitch>
+  </Grid>
 );
 
 const entityWarningContent = (
@@ -114,17 +151,17 @@ const entityWarningContent = (
 const overviewContent = (
   <Grid container spacing={3} alignItems="stretch">
     {entityWarningContent}
-    <Grid item md={6}>
+    <Grid item md={4} xs={12}>
       <EntityAboutCard variant="gridItem" />
     </Grid>
-    <Grid item md={6} xs={12}>
+
+    <Grid item md={8} xs={12}>
       <EntityCatalogGraphCard variant="gridItem" height={400} />
     </Grid>
-
-    <Grid item md={4} xs={12}>
-      <EntityLinksCard />
-    </Grid>
-    <Grid item md={8} xs={12}>
+      <Grid item md={4} xs={12}>
+          <EntityLinksCard />
+      </Grid>
+      <Grid item md={8} xs={12}>
       <EntityHasSubcomponentsCard variant="gridItem" />
     </Grid>
   </Grid>
@@ -138,6 +175,14 @@ const serviceEntityPage = (
 
     <EntityLayout.Route path="/ci-cd" title="CI/CD">
       {cicdContent}
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/kubernetes" title="Kubernetes">
+      <EntityKubernetesContent refreshIntervalMs={30000} />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/github-insights" title="GitHub Insights">
+      {githubInsightsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/api" title="API">
@@ -176,6 +221,14 @@ const websiteEntityPage = (
 
     <EntityLayout.Route path="/ci-cd" title="CI/CD">
       {cicdContent}
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/kubernetes" title="Kubernetes">
+      <EntityKubernetesContent refreshIntervalMs={30000} />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/github-insights" title="GitHub Insights">
+      {githubInsightsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/dependencies" title="Dependencies">

@@ -6,20 +6,38 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  IMAGE_NAME: ${{ github.event.repository.name }}
+  IMAGE_TAGS: ${{ github.sha }}
+  IMAGE_REGISTRY: quay.io
+  IMAGE_NAMESPACE: jfargett
+
 jobs:
   build:
 
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [16.x, 18.x]
-
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+
+      - name: Build Image
+        id: build-image
+        uses: redhat-actions/buildah-build@v2
         with:
-          node-version: ${{ matrix.node-version }}
-      - run: npm ci
-      - run: npm run build --if-present
+          image: ${{ env.IMAGE_NAME }}
+          tags: ${{ env.IMAGE_TAGS }}
+          containerfiles: |
+            ./Dockerfile
+
+      - name: Push To Quay.io
+        id: push-to-quay
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-image.outputs.image }}
+          tags: ${{ steps.build-image.outputs.tags }}
+          registry: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Print image url
+        run: echo "Image pushed to ${{ steps.push-to-quay.outputs.registry-paths }}"
