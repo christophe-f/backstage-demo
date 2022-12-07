@@ -54,7 +54,7 @@ import {
 } from '@backstage/catalog-model';
 import {
   EntityArgoCDOverviewCard,
-  isArgocdAvailable
+  EntityArgoCDHistoryCard
 } from '@roadiehq/backstage-plugin-argo-cd';
 import {
   EntityGithubPullRequestsContent,
@@ -81,33 +81,37 @@ const techdocsContent = (
 const cicdContent = (
   // This is an example of how you can implement your company's logic in entity page.
   // You can for example enforce that all components of type 'service' should use GitHubActions
-  <EntitySwitch>
-    <EntitySwitch.Case if={isGithubActionsAvailable}>
-      <EntityGithubActionsContent />
-    </EntitySwitch.Case>
-    <EntitySwitch.Case if={e => Boolean(isArgocdAvailable(e))}>
-      <Grid item sm={4}>
-        <EntityArgoCDOverviewCard />
-      </Grid>
-    </EntitySwitch.Case>
-
-    <EntitySwitch.Case>
-      <EmptyState
-        title="No CI/CD available for this entity"
-        missing="info"
-        description="You need to add an annotation to your component if you want to enable CI/CD for it. You can read more about annotations in Backstage by clicking the button below."
-        action={
-          <Button
-            variant="contained"
-            color="primary"
-            href="https://backstage.io/docs/features/software-catalog/well-known-annotations"
-          >
-            Read more
-          </Button>
-        }
-      />
-    </EntitySwitch.Case>
-  </EntitySwitch>
+  <Grid container spacing={3} alignItems="stretch">
+    <EntitySwitch>
+      <EntitySwitch.Case if={isGithubActionsAvailable}>
+        <Grid item sm={12} md={12}>
+          <EntityGithubActionsContent />
+        </Grid>
+        <Grid item sm={12} md={3}>
+          <EntityArgoCDOverviewCard />
+        </Grid>
+        <Grid item sm={12} md={9}>
+          <EntityArgoCDHistoryCard />
+        </Grid>
+      </EntitySwitch.Case>
+      <EntitySwitch.Case>
+        <EmptyState
+          title="No CI/CD available for this entity"
+          missing="info"
+          description="You need to add an annotation to your component if you want to enable CI/CD for it. You can read more about annotations in Backstage by clicking the button below."
+          action={
+            <Button
+              variant="contained"
+              color="primary"
+              href="https://backstage.io/docs/features/software-catalog/well-known-annotations"
+            >
+              Read more
+            </Button>
+          }
+        />
+      </EntitySwitch.Case>
+    </EntitySwitch>
+  </Grid>
 );
 
 const githubInsightsContent = (
@@ -177,11 +181,11 @@ const serviceEntityPage = (
       {cicdContent}
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/kubernetes" title="Kubernetes">
+    <EntityLayout.Route path="/kubernetes" title="OpenShift">
       <EntityKubernetesContent refreshIntervalMs={30000} />
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/github-insights" title="GitHub Insights">
+    <EntityLayout.Route path="/github-insights" title="Code Insights">
       {githubInsightsContent}
     </EntityLayout.Route>
 
@@ -223,11 +227,11 @@ const websiteEntityPage = (
       {cicdContent}
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/kubernetes" title="Kubernetes">
+    <EntityLayout.Route path="/kubernetes" title="OpenShift">
       <EntityKubernetesContent refreshIntervalMs={30000} />
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/github-insights" title="GitHub Insights">
+    <EntityLayout.Route path="/github-insights" title="Code Insights">
       {githubInsightsContent}
     </EntityLayout.Route>
 

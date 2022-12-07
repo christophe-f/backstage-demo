@@ -8,7 +8,7 @@ on:
 
 env:
   IMAGE_NAME: ${{ github.event.repository.name }}
-  IMAGE_TAGS: ${{ github.sha }}
+  IMAGE_TAGS: latest ${{ github.sha }}
   IMAGE_REGISTRY: quay.io
   IMAGE_NAMESPACE: jfargett
 
@@ -29,6 +29,13 @@ jobs:
           containerfiles: |
             ./Dockerfile
 
+      - name: Log in to Quay.io
+        uses: redhat-actions/podman-login@v1
+        with:
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+          registry: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}
+
       - name: Push To Quay.io
         id: push-to-quay
         uses: redhat-actions/push-to-registry@v2
@@ -36,8 +43,3 @@ jobs:
           image: ${{ steps.build-image.outputs.image }}
           tags: ${{ steps.build-image.outputs.tags }}
           registry: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}
-          username: ${{ secrets.REGISTRY_USER }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
-
-      - name: Print image url
-        run: echo "Image pushed to ${{ steps.push-to-quay.outputs.registry-paths }}"

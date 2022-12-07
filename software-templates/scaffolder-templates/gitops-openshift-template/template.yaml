@@ -1,0 +1,69 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: gitops-openshift-template
+  title: Deploy to OpenShift
+  description: Create the manifests for OpenShift
+  tags:
+    - recommended
+    - openshift
+spec:
+  owner: user:john
+  type: service
+
+  parameters:
+    - title: Provide some simple information
+      required:
+        - component_id
+        - owner
+      properties:
+        component_id:
+          title: Name
+          type: string
+          description: Unique name of the component
+          ui:field: OwnedEntityPicker
+          ui:options:
+            allowedKinds:
+              - Template
+
+  steps:
+    - id: template_code
+      name: Generating Component
+      action: fetch:template
+      input:
+        url: ./manifests
+        copyWithoutRender:
+          - .github/workflows/
+        values:
+          component_id: ${{ parameters.component_id }}
+          description: ${{ parameters.description }}
+          destination: ${{ parameters.repoUrl | parseRepoUrl }}
+          owner: ${{ parameters.owner }}
+
+    - id: publish_code
+      name: Publishing to Source Code Repository
+      action: publish:github
+      input:
+        allowedHosts: ["github.com"]
+        description: ${{ parameters.description }}
+        repoUrl: ${{parameters.repoUrl}}
+        defaultBranch: main
+        repoVisibility: public
+
+    - id: register_code
+      name: Registering the component
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publish_code.output.repoContentsUrl }}
+        catalogInfoPath: "/catalog-info.yaml"
+
+  output:
+    links:
+      - title: Source Code Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open Component in catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}
+      - title: View TechDocs
+        icon: techdocs
+        entityRef: ${{ steps.register.output.entityRef }}/docs

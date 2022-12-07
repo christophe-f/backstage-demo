@@ -25,7 +25,7 @@ integrations:
 
 proxy:
   '/argocd/api':
-    target: ${ARGOCD_URL}
+    target: ${ARGOCD_URL}/api/v1/
     changeOrigin: true
     # only if your argocd api has self-signed cert
     secure: false
@@ -44,14 +44,14 @@ kubernetes:
     - type: 'config'
       clusters:
         - url: ${K8S_URL}
-          name: minikube
+          name: Backstage Demo
           authProvider: 'serviceAccount'
           skipTLSVerify: true
           skipMetricsLookup: true
           serviceAccountToken: ${K8S_TOKEN}
           dashboardUrl: ${K8S_DASHBOARD_URL}
           dashboardApp: standard
-          caData: ${K8S_CONFIG_CA_DATA}
+#          caData: ${K8S_CONFIG_CA_DATA}
           customResources:
             - group: 'argoproj.io'
               apiVersion: 'v1alpha1'

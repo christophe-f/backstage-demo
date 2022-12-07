@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ${{ values.component_id }}
+    backstage.io/kubernetes-id: ${{ values.component_id }}
+  name: ${{ values.component_id }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${{ values.component_id }}
+  template:
+    metadata:
+      labels:
+        app: ${{ values.component_id }}
+    spec:
+      containers:
+        - image: quay.io/jfargett/${{ values.component_id }}:latest
+          name: ${{ values.component_id }}
+          resources: {}
