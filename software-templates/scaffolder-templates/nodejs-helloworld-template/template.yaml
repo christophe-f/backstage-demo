@@ -14,16 +14,22 @@ spec:
   type: service
 
   parameters:
-    - title: Provide some simple information
+    - title: Provide the GitHub location
       required:
-        - component_id
+        - org
+        - repo
+      properties:
+        org:
+          title: AppCode
+          type: string
+          description: GitHub Organization
+        repo:
+          title: Repository
+          type: string
+    - title: Provide information about the new component
+      required:
         - owner
       properties:
-        component_id:
-          title: Name
-          type: string
-          description: Unique name of the component
-          ui:field: EntityNamePicker
         description:
           title: Description
           type: string
@@ -32,35 +38,42 @@ spec:
           title: Owner
           type: string
           description: Owner of the component
-          default: 'Team A'
+          default: 'group: team-a'
           ui:field: OwnerPicker
           ui:options:
             allowedKinds:
               - Group
-    - title: Choose a location
+    - title: Choose a platform
       required:
-        - repoUrl
+        - platform
       properties:
-        repoUrl:
-          title: Repository Location
+        platform:
+          title: Select a platform for deployment
           type: string
-          ui:field: RepoUrlPicker
-          ui:options:
-            allowedHosts:
-              - github.com
-
+          default: ocp
+          enum:
+            - ocp
+            - gcp1
+            - vm
+            - mainframe
+          enumNames:
+            - 'OpenShift'
+            - 'GCP CloudRun'
+            - 'VM'
+            - 'Mainframe'
   steps:
     - id: template
-      name: Generating component
+      name: Generating Component
       action: fetch:template
       input:
         url: ./skeleton
         copyWithoutRender:
           - .github/workflows/
         values:
-          component_id: ${{ parameters.component_id }}
+          component_id: ${{ parameters.repo }}
           description: ${{ parameters.description }}
-          destination: ${{ parameters.repoUrl | parseRepoUrl }}
+          destination: ${{ parameters.org }}/${{ parameters.repo }}
+          org: ${{ parameters.org }}
           owner: ${{ parameters.owner }}
 
     - id: publish
@@ -69,11 +82,11 @@ spec:
       input:
         allowedHosts: ["github.com"]
         description: ${{ parameters.description }}
-        repoUrl: ${{ parameters.repoUrl }}
+        repoUrl: github.com?owner=${{ parameters.org }}&repo=${{ parameters.repo }}
         defaultBranch: main
 
     - id: register
-      name: Registering to the Catalog
+      name: Registering the component
       action: catalog:register
       input:
         repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
