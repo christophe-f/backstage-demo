@@ -30,7 +30,7 @@ proxy:
     # only if your argocd api has self-signed cert
     secure: false
     headers:
-      Cookie: ${ARGOCD_AUTH_TOKEN}
+      Cookie: 'argocd.token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcmdvY2QiLCJzdWIiOiJhZG1pbjphcGlLZXkiLCJuYmYiOjE2NzA0MjY4NTEsImlhdCI6MTY3MDQyNjg1MSwianRpIjoiZDFiNGQ4NzgtZTVkYS00MTJkLWJkNzYtMTU5ODQ4NGY5NzYzIn0.1af_1u9ZDyobMrg2S5kJFwOsP47qCYdWyuLUT-bI5To'
 
 scaffolder:
   defaultAuthor:

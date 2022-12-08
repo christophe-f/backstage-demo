@@ -35,6 +35,7 @@ import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import {CssBaseline, ThemeProvider} from "@material-ui/core";
 import { redHatTheme } from './themes/redhat';
+import { janusTheme } from './themes/janus';
 import {HomepageCompositionRoot} from "@backstage/plugin-home";
 import {HomePage} from "./components/home/HomePage";
 
@@ -55,16 +56,28 @@ const app = createApp({
       catalogIndex: catalogPlugin.routes.catalogIndex,
     });
   },
-    themes: [{
-        id: 'redhat',
-        title: 'Red Hat Theme',
-        variant: 'light',
-        Provider: ({ children }) => (
-            <ThemeProvider theme={redHatTheme}>
-                <CssBaseline>{children}</CssBaseline>
-            </ThemeProvider>
-        ),
-    }],
+    themes: [
+        {
+            id: 'janus',
+            title: 'Janus Theme',
+            variant: 'light',
+            Provider: ({ children }) => (
+                <ThemeProvider theme={janusTheme}>
+                    <CssBaseline>{children}</CssBaseline>
+                </ThemeProvider>
+            ),
+        },
+        {
+            id: 'redhat',
+            title: 'Red Hat Theme',
+            variant: 'light',
+            Provider: ({ children }) => (
+                <ThemeProvider theme={redHatTheme}>
+                    <CssBaseline>{children}</CssBaseline>
+                </ThemeProvider>
+            ),
+        }
+    ],
 });
 
 const AppProvider = app.getProvider();
